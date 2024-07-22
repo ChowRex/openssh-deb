@@ -199,11 +199,11 @@ jobs:
   create_release:
     needs:
       - build_ubuntu24
-      - build_ubuntu22
+      # - build_ubuntu22
       - build_ubuntu20
       - build_debian13
-      - build_debian12
-      - build_debian11
+      # - build_debian12
+      # - build_debian11
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -213,10 +213,10 @@ jobs:
           name: ubuntu24-arm64
           path: ./output
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: ubuntu22-arm64
-          path: ./output
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     name: ubuntu22-arm64
+      #     path: ./output
 
       - uses: actions/download-artifact@v4
         with:
@@ -228,15 +228,15 @@ jobs:
           name: debian13-arm64
           path: ./output
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: debian12-arm64
-          path: ./output
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     name: debian12-arm64
+      #     path: ./output
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: debian11-arm64
-          path: ./output
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     name: debian11-arm64
+      #     path: ./output
 
       - name: Get tag message
         run: |
