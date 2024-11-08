@@ -20,7 +20,7 @@ RUN if [ ! -z "$APT_MIRROR" ]; then \
     if [ $(lsb_release -sc) != "focal" ]; then \
         apt install -y dh-virtualenv; \
     fi && \
-    apt install -y wget sudo pkgconf build-essential fakeroot dpkg-dev debhelper debhelper-compat dh-exec dh-runit libaudit-dev libedit-dev libgtk-3-dev libselinux1-dev libsystemd-dev libkrb5-dev libpam0g-dev libwrap0-dev && \
+    apt install -y curl wget sudo pkgconf build-essential fakeroot dpkg-dev debhelper debhelper-compat dh-exec dh-runit libaudit-dev libedit-dev libgtk-3-dev libselinux1-dev libsystemd-dev libkrb5-dev libpam0g-dev libwrap0-dev && \
     if [ $(apt-cache search --names-only 'libfido2-dev' | wc -l) -gt 0 ]; then \
         apt install -y libfido2-dev libcbor-dev; \
     fi && \
