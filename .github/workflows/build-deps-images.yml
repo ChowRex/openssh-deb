@@ -10,7 +10,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   # amd64 和 arm64 都用各自架构的原生 runner 构建（和 create-release.yml 的策略保持一致），
@@ -32,6 +31,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Set normalized GHCR image name
+        id: image-name
+        run: |
+          image_name=$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')
+          echo "value=$image_name" >> "$GITHUB_OUTPUT"
 
       - name: Fetch debhelper .debs into build context
         run: ./pullsrc.sh debhelper
@@ -63,6 +68,6 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ matrix.version }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:deps-${{ steps.vars.outputs.codename }}-${{ steps.vars.outputs.arch }}
+          tags: ${{ env.REGISTRY }}/${{ steps.image-name.outputs.value }}:deps-${{ steps.vars.outputs.codename }}-${{ steps.vars.outputs.arch }}
           cache-from: type=gha,scope=deps-${{ steps.vars.outputs.codename }}-${{ steps.vars.outputs.arch }}
           cache-to: type=gha,mode=max,scope=deps-${{ steps.vars.outputs.codename }}-${{ steps.vars.outputs.arch }}
