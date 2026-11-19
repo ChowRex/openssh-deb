@@ -4,13 +4,19 @@ on:
   push:
     tags: [ "v*" ]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing v* tag to rebuild and release
+        required: true
+        type: string
 
 permissions:
-  contents: write
+  contents: read
   packages: read
 
 env:
   REGISTRY: ghcr.io
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   build:
@@ -25,8 +31,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
+          ref: ${{ env.RELEASE_TAG }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Validate release tag
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9] ]] || { echo "Invalid release tag: $RELEASE_TAG" >&2; exit 1; }
+          git rev-parse --verify --quiet "refs/tags/${RELEASE_TAG}^{commit}" >/dev/null
+          [[ "$(git rev-parse HEAD)" == "$(git rev-parse "${RELEASE_TAG}^{commit}")" ]]
 
       - name: Set image tag
         id: vars
@@ -60,12 +73,17 @@ jobs:
             # EOL archive fix via install_deps.sh --fix-apt-only
             bash /work/install_deps.sh --fix-apt-only &&
             apt update -qq >/dev/null 2>&1 &&
-            apt install -y --no-install-recommends ./output/*.deb && ssh -V"
+            apt install -y --no-install-recommends ./output/*.deb &&
+            test -x /usr/sbin/sshd &&
+            install -d -o root -g root -m 0755 /run/sshd &&
+            sshd -t &&
+            sshd -T >/dev/null &&
+            ssh -V"
 
       - name: Pack .deb files into tar.gz
         id: pack
         run: |
-          TAG_NAME="${{ github.ref_name }}"
+          TAG_NAME="${RELEASE_TAG}"
           CODENAME=$(echo "${{ matrix.version }}" | cut -d':' -f2)
 
           ARCH="amd64"
@@ -86,13 +104,22 @@ jobs:
   create_release:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
+          ref: ${{ env.RELEASE_TAG }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Validate release tag
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9] ]] || { echo "Invalid release tag: $RELEASE_TAG" >&2; exit 1; }
+          git rev-parse --verify --quiet "refs/tags/${RELEASE_TAG}^{commit}" >/dev/null
+          [[ "$(git rev-parse HEAD)" == "$(git rev-parse "${RELEASE_TAG}^{commit}")" ]]
 
       - name: Download all archives
         uses: actions/download-artifact@v7
@@ -103,8 +130,7 @@ jobs:
       - name: Get tag message
         run: |
           echo -e "> Automated release created by GitHub Actions.\n" > ${{ github.workspace }}/RELEASE.md
-          GITHUB_REF=${{ github.ref }}
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
+          TAG_NAME="${RELEASE_TAG}"
           git tag -l --format='%(contents)' "${TAG_NAME}" | tee -a ${{ github.workspace }}/RELEASE.md
 
       - name: Create Release
@@ -114,5 +140,7 @@ jobs:
           artifacts: "${{ github.workspace }}/output/*.tar.gz"
           bodyFile: ${{ github.workspace }}/RELEASE.md
           token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_TAG }}
           allowUpdates: true
 

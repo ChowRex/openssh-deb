@@ -6,6 +6,8 @@ on:
     branches: [ master ]
     paths:
       - 'install_deps.sh'
+      - 'pullsrc.sh'
+      - 'version.env'
       - 'docker/Dockerfile.deps'
 
 env:

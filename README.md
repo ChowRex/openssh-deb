@@ -211,11 +211,11 @@ The build starts from the unmodified Debian Sid source package and applies only 
 
 1. Find the latest Sid version:
    ```bash
-   wget -qO- http://deb.debian.org/debian/pool/main/o/openssh/ \
+   wget -qO- https://deb.debian.org/debian/pool/main/o/openssh/ \
      | grep -oP 'openssh_\K[0-9]+\.[0-9]+p[0-9]+-[0-9]+(?:~bpo[0-9]+(?:\+[0-9]+)?)?' \
      | sort -V | tail -n 1
    ```
 2. Update `OPENSSH_SIDPKG` in `version.env` and the version table in `README.md`.
 3. Commit: `git add README.md version.env && git commit -m "bump version to <new-version>"`
-4. Tag: `git tag v<new-version>_b1` (`_b1` = build 1; increment on rebuilds)
+4. Tag: `git tag v<new-version>`
 5. Push: `git push && git push --tags`

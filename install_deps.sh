@@ -174,7 +174,6 @@ fi
 fix_apt_sources
 
 apt update
-apt upgrade -y
 apt install -y --no-install-recommends lsb-release wget sudo pkgconf build-essential fakeroot \
 	dpkg-dev debhelper debhelper-compat dh-exec dh-runit ca-certificates \
 	libaudit-dev libedit-dev libgtk-3-dev libselinux1-dev libsystemd-dev \

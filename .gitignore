@@ -1,6 +1,9 @@
 build/
 downloads/
 builddep/
+nexus-apt-upload/
+.nexus-apt-cache/
+.idea/
 *.swp
 *.tar.gz
 *.deb

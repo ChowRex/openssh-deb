@@ -10,7 +10,7 @@ Shell scripts that backport OpenSSH from Debian sid to older Debian/Ubuntu distr
 
 ## Version source of truth
 
-`version.env` defines `OPENSSLVER`, pins `DEBHELPER_SIDPKG` (sid debhelper .debs; empty = auto-detect latest from the pool), and auto-detects `OPENSSH_SIDPKG` by scraping `http://deb.debian.org/debian/pool/main/o/openssh/`. It is sourced (not executed) by `compile.sh` and `pullsrc.sh`. Do not run it directly.
+`version.env` defines `OPENSSLVER`, pins `DEBHELPER_SIDPKG` (sid debhelper .debs; empty = auto-detect latest from the pool), and auto-detects `OPENSSH_SIDPKG` by scraping `https://deb.debian.org/debian/pool/main/o/openssh/`. It is sourced (not executed) by `compile.sh` and `pullsrc.sh`. Do not run it directly.
 
 ## Key env vars
 
@@ -71,11 +71,11 @@ When a new upstream version is built and released:
 
 1. Scrape the latest sid version to get the new value for `OPENSSH_SIDPKG`:
    ```bash
-   wget -qO- http://deb.debian.org/debian/pool/main/o/openssh/ | grep -oP 'openssh_\K[0-9]+\.[0-9]+p[0-9]+-[0-9]+(?:~bpo[0-9]+(?:\+[0-9]+)?)?' | sort -V | tail -n 1
+   wget -qO- https://deb.debian.org/debian/pool/main/o/openssh/ | grep -oP 'openssh_\K[0-9]+\.[0-9]+p[0-9]+-[0-9]+(?:~bpo[0-9]+(?:\+[0-9]+)?)?' | sort -V | tail -n 1
    ```
 2. Update `OPENSSH_SIDPKG` in `version.env` and the `- OpenSSH ...` line in `README.md` with the new version.
 3. Commit the change: `git add README.md version.env && git commit -m "bump version to <new-version>"`
-4. Tag the release: `git tag v<new-version>_b1` (prefix `v`, suffix `_b1` = build 1; increment for rebuilds)
+4. Tag the release: `git tag v<new-version>`
 5. Push: `git push && git push --tags`
 
 ## Known distro-specific quirks
