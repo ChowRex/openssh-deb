@@ -31,8 +31,14 @@ docker build --build-arg BASE_IMAGE=ubuntu:noble -f docker/Dockerfile.deps -t <t
 
 `docker/Dockerfile.deps` uses BuildKit `--mount=type=bind` for `install_deps.sh` and `builddep/`, so neither lands in an image layer (BuildKit is required; it is the default in modern docker).
 
-> **EOL distro sources**: For EOL Debian releases (e.g. buster) the default
-> `deb.debian.org` no longer serves the repository. `install_deps.sh` now automatically switches EOL Debian sources to `archive.debian.org` (adding the `-backports` pocket) before apt operations; `switch_archive_sources.sh` has been removed; EOL handling (buster and bullseye both switch unconditionally; bullseye-security is commented out as archive.debian.org does not carry it yet) is now fully inside `install_deps.sh`. `docker/Dockerfile.deps` and CI both invoke `install_deps.sh` directly.
+> **EOL distro sources**: For archived Debian buster and bullseye, the default
+> `deb.debian.org` no longer provides every required package. `install_deps.sh`
+> switches both suites to `archive.debian.org`. Buster security is disabled
+> because the archive does not provide `buster-security`; bullseye retains its
+> archived security suite, which provides the matching final security package
+> set. Only buster adds its `-backports` pocket. `switch_archive_sources.sh`
+> has been removed; EOL handling is fully inside `install_deps.sh`.
+> `docker/Dockerfile.deps` and CI both invoke `install_deps.sh` directly.
 
 ## pullsrc on the host
 

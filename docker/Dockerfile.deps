@@ -5,7 +5,7 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-# install_deps.sh handles EOL archive switching (buster unconditional, bullseye probed) and APT_MIRROR
+# install_deps.sh switches archived Debian buster and bullseye sources and honors APT_MIRROR.
 RUN --mount=type=bind,source=install_deps.sh,target=/tmp/install_deps.sh \
 	--mount=type=bind,source=builddep,target=/tmp/builddep \
 	cd /tmp && bash ./install_deps.sh

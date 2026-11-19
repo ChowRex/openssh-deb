@@ -29,7 +29,7 @@ source $__dir/version.env
 RETRY_COUNT=0
 MAX_RETRIES=10
 while [[ -z ${OPENSSH_SIDPKG:-} ]]; do
-	RETRY_COUNT=$((RETRY_COUNT+1))
+	RETRY_COUNT=$((RETRY_COUNT + 1))
 	if [[ $RETRY_COUNT -gt $MAX_RETRIES ]]; then
 		echo "Error: Failed to get OPENSSH_SIDPKG from version.env after $MAX_RETRIES retries." >&2
 		exit 1
@@ -46,13 +46,13 @@ fi
 BUILD_CODENAME=$(lsb_release -sc)
 
 SOURCES=(
-	openssh_${OPENSSH_SIDPKG}.debian.tar.xz \
-	openssh_${OPENSSH_SIDPKG}.dsc \
-	openssh_${OPENSSHVER}.orig.tar.xz \
+	"openssh_${OPENSSH_SIDPKG}.debian.tar.xz"
+	"openssh_${OPENSSH_SIDPKG}.dsc"
+	"openssh_${OPENSSHVER}.orig.tar.xz"
 )
 
 echo "-- Build OpenSSH : ${OPENSSH_SIDPKG}"
-if [[ $STATIC_OPENSSL -eq 1 ]]; then 
+if [[ $STATIC_OPENSSL -eq 1 ]]; then
 	echo "-- Linked OpenSSL: ${OPENSSLSRC/.tar.gz/}"
 	SOURCES+=("$OPENSSLSRC")
 else
@@ -60,18 +60,18 @@ else
 fi
 
 CHECKEXISTS() {
-  if [[ ! -f $__dir/downloads/$1 ]];then
-    echo "-- Error: $1 not found, run 'pullsrc.sh', or manually put it in the downloads dir."
-    exit 1
-  fi
+	if [[ ! -f $__dir/downloads/$1 ]]; then
+		echo "-- Error: $1 not found, run 'pullsrc.sh', or manually put it in the downloads dir."
+		exit 1
+	fi
 }
 
 for fn in "${SOURCES[@]}"; do
-  # compat: allow .orig.tar.gz for old versions (e.g. 10.4) if .xz not present
-  if [[ "$fn" == *.orig.tar.xz ]] && [[ ! -f "$__dir/downloads/$fn" ]] && compgen -G "$__dir/downloads/openssh_${OPENSSHVER}.orig.tar.*" > /dev/null; then
-    continue
-  fi
-  CHECKEXISTS "$fn"
+	# compat: allow .orig.tar.gz for old versions (e.g. 10.4) if .xz not present
+	if [[ "$fn" == *.orig.tar.xz ]] && [[ ! -f "$__dir/downloads/$fn" ]] && compgen -G "$__dir/downloads/openssh_${OPENSSHVER}.orig.tar.*" >/dev/null; then
+		continue
+	fi
+	CHECKEXISTS "$fn"
 done
 
 cd $__dir
@@ -84,7 +84,7 @@ if [[ $STATIC_OPENSSL -eq 1 ]]; then
 	tar xfz $__dir/downloads/$OPENSSLSRC --strip-components=1 -C openssl
 	pushd openssl
 	./config no-dgram no-tests shared zlib -fPIC
-	make -j$(nproc)
+	make -j"$(nproc)"
 	OPENSSLDIR=$PWD
 	popd
 fi
@@ -177,5 +177,5 @@ popd
 # Move all files into output dir
 cd $__dir
 mkdir -p output
-mv -f build/*.deb output/ 2> /dev/null || echo "No deb packages created!"
+mv -f build/*.deb output/ 2>/dev/null || echo "No deb packages created!"
 #mv -f build/*.udeb output/ 2> /dev/null || echo "No udeb packages created!"

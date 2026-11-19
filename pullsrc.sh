@@ -24,8 +24,8 @@ source $__dir/version.env
 # (dh-sequence-movetousr needs >= 13.11.7), and adding sid apt sources inside
 # old containers is fragile, so we just fetch the two arch-all .debs directly.
 DEBHELPER_LINKS=(
-	$DEBMIRROR/pool/main/d/debhelper/debhelper_${DEBHELPER_SIDPKG}_all.deb
-	$DEBMIRROR/pool/main/d/debhelper/libdebhelper-perl_${DEBHELPER_SIDPKG}_all.deb
+	"$DEBMIRROR/pool/main/d/debhelper/debhelper_${DEBHELPER_SIDPKG}_all.deb"
+	"$DEBMIRROR/pool/main/d/debhelper/libdebhelper-perl_${DEBHELPER_SIDPKG}_all.deb"
 )
 
 # `./pullsrc.sh debhelper` fetches only the .debs (used by the deps-image CI
@@ -38,7 +38,8 @@ if [[ "$arg1" == "debhelper" ]]; then
 fi
 
 DOWNLOADLINKS=(
-	$DEBMIRROR/pool/main/o/openssh/openssh_${OPENSSH_SIDPKG}.{debian.tar.xz,dsc}
+	"$DEBMIRROR/pool/main/o/openssh/openssh_${OPENSSH_SIDPKG}.debian.tar.xz"
+	"$DEBMIRROR/pool/main/o/openssh/openssh_${OPENSSH_SIDPKG}.dsc"
 )
 # Dynamic orig detection: parse .dsc for actual orig filename(s) to handle gz→xz switch (10.5p1+ uses .xz, no .asc)
 DSC_URL=$DEBMIRROR/pool/main/o/openssh/openssh_${OPENSSH_SIDPKG}.dsc
@@ -113,4 +114,3 @@ wget --continue "${DOWNLOADLINKS[@]}"
 
 echo "> INFO: downloading debhelper ${DEBHELPER_SIDPKG} .debs into builddep/."
 wget --continue -P "$__dir/builddep" "${DEBHELPER_LINKS[@]}"
-

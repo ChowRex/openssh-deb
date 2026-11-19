@@ -202,7 +202,7 @@ The build starts from the unmodified Debian Sid source package and applies only 
 - **Security-key / FIDO2** — if `libfido2-dev < 1.5.0`, removes it from build deps and flips `with-security-key-builtin` to `disable-security-key`.
 - **wtmpdb** — if `libwtmpdb-dev` is unavailable, strips it and `--with-wtmpdb`.
 - **init-system-helpers** — relaxes the versioned dependency from `1.66` to `1.50` when the installed version is older.
-- **EOL apt sources** — `install_deps.sh` automatically rewrites EOL Debian sources to `archive.debian.org` (including `-backports`), unconditionally for both `buster` and `bullseye`; bullseye-security is commented out as archive.debian.org does not carry it yet. The retired `switch_archive_sources.sh` is no longer needed.
+- **EOL apt sources** — `install_deps.sh` rewrites Debian buster and bullseye sources to `archive.debian.org`. Buster security is disabled because `buster-security` is absent from the archive; bullseye retains its archived security suite because it provides the matching final security package set. Only buster adds its `-backports` pocket. The retired `switch_archive_sources.sh` is no longer needed.
 - **Additional portability shims in `compile.sh`** — handles `libcrypt-dev`, `dh-runit`/`runit-helper`, `systemd` sysusers, and non-merged-`/usr` layouts as needed.
 
 ---
